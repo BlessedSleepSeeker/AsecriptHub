@@ -1,6 +1,6 @@
 # BatchExport
 
-An aseprite file batch exporting to .png  
+An Aseprite file batch exporter to .png  
 
 [Return to the Integrated Script List](../README.md#integrated-scripts)
 
