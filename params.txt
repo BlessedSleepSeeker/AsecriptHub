@@ -1,1 +1,2 @@
-C:\Program Files (x86)\Steam\steamapps\common\Aseprite
+C:\Program Files (x86)\Steam\steamapps\common\Aseprite\Aseprite.exe
+C:\Users\camil\AppData\Roaming\Aseprite\scripts

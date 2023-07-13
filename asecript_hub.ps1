@@ -21,8 +21,10 @@ Setup.ps1 -SetAsepritePath
 #>
 
 Param(
-    [switch] $SetAsepritePath
+    [switch] $SetAsepritePath,
+    [switch] $SetScriptFolderPath
 )
+
 
 function prt {
     param (
@@ -40,32 +42,115 @@ function prt {
     Write-Host $Message @params
 }
 
-$AsepritePath = Get-Content -Path .\params.txt
+$params = (Get-Content -Raw -Path .\params.txt) -split '\r?\n'
+$AsepritePath = $params[0]
+$ScriptFolderPath = $params[1]
+$ScriptsArray
 
-if ($SetAsepritePath -or $null -eq $AsepritePath) {
+function Write-Saved-Params {
+    prt "Aseprite Path = '${AsepritePath}'"
+    prt "Script Folder Path = '${ScriptFolderPath}'"
+}
+
+function Set-Aseprite-Path {
     do {
-        $AsepritePath = Read-Host "Path to your Aseprite installation (leave blank to use 'C:\Program Files (x86)\Steam\steamapps\common\Aseprite')"
-    } while ([string]::IsNullOrWhiteSpace($AsepritePath))
-    if (-not(Test-Path -Path $AsepritePath)) {
+        $script:AsepritePath = Read-Host "Path to your Aseprite installation (Enter wrong path to return to default : : 'C:\Program Files (x86)\Steam\steamapps\common\Aseprite')"
+    } while ([string]::IsNullOrWhiteSpace($script:AsepritePath))
+    if (-not(Test-Path -Path $script:AsepritePath)) {
         prt "Aseprite.exe not found at '${AsepritePath}'. Back to default : 'C:\Program Files (x86)\Steam\steamapps\common\Aseprite'" Red Black
-        $AsepritePath = "C:\Program Files (x86)\Steam\steamapps\common\Aseprite"
+        $script:AsepritePath = "C:\Program Files (x86)\Steam\steamapps\common\Aseprite"
     }
-    prt "Path set : '${AsepritePath}' !" Black White
+    prt "Path set : '${script:AsepritePath}' !" Black White
+}
+
+function Set-Script-Path {
+    do {
+        $script:ScriptFolderPath = Read-Host "Path to your script folder (Enter wrong path to return to default : '.\scripts')"
+    } while ([string]::IsNullOrWhiteSpace($script:ScriptFolderPath))
+    if (-not(Test-Path -Path $script:ScriptFolderPath)) {
+        prt "Folder not found at '${ScriptFolderPath}'. Back to default : '.\scripts'" Red Black
+        $script:ScriptFolderPath = ".\scripts"
+    }
+    prt "Path set : '${ScriptFolderPath}' !" Black White
+}
+
+function Test-Saved-Params {
+    $var = $true
+    if ($SetAsepritePath -or $null -eq $script:AsepritePath -or -not(Test-Path -Path $script:AsepritePath)) {
+        prt "Aseprite not found !" Black Red
+        Set-Aseprite-Path
+        $var = $false
+    }
+    if ($SetScriptFolderPath -or $null -eq $script:ScriptFolderPath -or -not(Test-Path -Path $script:ScriptFolderPath)) {
+        prt "Script Folder not found !" Black Red
+        Set-Script-Path
+        $var = $false
+    }
+    return $var
+}
+
+function Save-Params {
+    $title = "scripts_hub.ps1 - Aseprite Scripts Collection"
+    $message = "Do you want to save the paramaters in .\params.txt ?"
     $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "The path will be saved in '.\params.txt'"
     $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "The path will not be saved."
     $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
-
-    $title = "scripts_hub.ps1 - Aseprite Scripts Collection"
-    $message = "Do you want to save this path ?"
     $result = $host.ui.PromptForChoice($title, $message, $options, 1)
     switch ($result) {
         0 {
             prt "Saving Path..." Cyan Black
-            Set-Content -Path ./params.txt -Value "${AsepritePath}"
+            prt $script:AsepritePath
+            Set-Content -Path params.txt -Value "${AsepritePath}"
+            prt $script:ScriptFolderPath
+            Add-Content -Path params.txt -Value "${ScriptFolderPath}"
             prt "Path Saved !" Green Black
         } 1 {
             prt "Path not saved." Magenta Black
         }
     }
-    Exit
 }
+
+function Write-Scripts {
+    foreach ($script in $script:ScriptArray) {
+        prt $script
+    }
+}
+
+function Get-Scripts {
+    prt "Scripts Founds :"
+    $script:ScriptArray = Get-ChildItem -Path $script:ScriptFolderPath | Where-Object {!$_.PSIsContainer} | ForEach-Object {$_.Name}
+}
+
+function Invoke-Script {
+    param (
+        [string]$ScriptName
+    )
+
+    & $script:AsepritePath -b -script "${script:ScriptFolderPath}\${ScriptName}"
+}
+
+function Select-Script {
+    $title = "scripts_hub.ps1 - Aseprite Scripts Collection"
+    $message = "Select your script !"
+    [System.Management.Automation.Host.ChoiceDescription[]]$options = @()
+    foreach ($script in $script:ScriptArray) {
+        $option = New-Object System.Management.Automation.Host.ChoiceDescription "&${script}"
+        $options += $option
+    }
+    $result = $host.ui.PromptForChoice($title, $message, $options, 0)
+    prt "Script Output" Blue
+    Invoke-Script -ScriptName $script:ScriptArray[$result]
+}
+
+function Main {
+    Write-Saved-Params
+    if (!(Test-Saved-Params)) {
+        Save-Params
+    }
+    prt "Setup finished !`n--------------------------------------------------------------`n"
+
+    Get-Scripts
+    Select-Script
+}
+
+Main
