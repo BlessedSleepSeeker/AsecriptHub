@@ -6,9 +6,12 @@ Created by Camille Gouneau
 Flexible Powershell Script for mass exporting of .ase and .aseprite files.
 
 .Description
+This script allows you to export an entire folder and every sub-folder of .ase and .aseprite files.
+The only mandatory parameter is AsepritePath.
+The others parameters will be prompted in CLI.
 
 .Example
-BatchExport.ps1
+BatchExport.ps1 -AsepritePath "C:\Program Files (x86)\Steam\steamapps\common\Aseprite\Aseprite.exe"
 
 #>
 
@@ -202,13 +205,14 @@ function Export-File {
     
     if (Check-File-Ase filename) {
         prt "Exporting [${filename}]..."
-        # the line where I call the aseprite CLI is here
         $fullpathSprite = "${path}\${filename}"
         $fullPathExport = Build-Export-Path $path $filename        
         $exportSize = $script:Size / 100
         & $script:AsepritePath -b $fullpathSprite --scale $exportSize --save-as $fullPathExport
         prt "Exported [${filename}] at [${fullPathExport}]" Green
-        Start-Sleep -Milliseconds 100
+        #is only useful if you use the -p options for faking the run to not desync the message from Aseprite and BatchExport.
+        # Aseprite actually exporting does not print anything to the console.
+        #Start-Sleep -Milliseconds 100
     }
     
     else {
@@ -231,7 +235,9 @@ function Export-Folder {
     }
     if ($script:Recursion) {
         foreach ($folderName in $foldersInPath) {
-            Export-Folder "${path}\${folderName}"
+            if (!(Is-In-Blacklist $folderName)) {
+                Export-Folder "${path}\${folderName}"
+            }
         }
     }
 }
@@ -250,6 +256,8 @@ function Main {
     Validate-Settings
 
     Export-Folder $script:SpritesPath
+    #victory bell (for a future update maybe ?)
+    #[console]::beep(2000,300)
 }
 
 Main
