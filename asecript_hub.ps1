@@ -125,8 +125,12 @@ function Invoke-Script {
     param (
         [string]$ScriptName
     )
-
-    & $script:AsepritePath -b -script "${script:ScriptFolderPath}\${ScriptName}"
+    if ($ScriptName.Substring($ScriptName.Length - 4) -eq ".lua") {
+        & $script:AsepritePath -b -script "${script:ScriptFolderPath}\${ScriptName}"
+    }
+    elseif ($ScriptName.Substring($ScriptName.Length - 4) -eq ".ps1") {
+        & ${script:ScriptFolderPath}\${ScriptName} -AsepritePath ${script:AsepritePath}
+    }
 }
 
 function Select-Script {
@@ -138,8 +142,9 @@ function Select-Script {
         $options += $option
     }
     $result = $host.ui.PromptForChoice($title, $message, $options, 0)
-    prt "Script Output" Blue
-    Invoke-Script -ScriptName $script:ScriptArray[$result]
+    $name = $script:ScriptArray[$result]
+    prt "${name} Output :`n--------------------------------------------------------------`n" Blue
+    Invoke-Script -ScriptName $name
 }
 
 function Main {
