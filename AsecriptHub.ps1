@@ -134,7 +134,7 @@ function Invoke-Script {
 }
 
 function Select-Script {
-    $title = "scripts_hub.ps1 - Aseprite Scripts Collection"
+    $title = "AsecriptHub - An Aseprite Scripts Collection"
     $message = "Select your script !"
     [System.Management.Automation.Host.ChoiceDescription[]]$options = @()
     foreach ($script in $script:ScriptArray) {

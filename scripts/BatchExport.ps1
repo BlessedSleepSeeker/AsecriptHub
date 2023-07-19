@@ -116,7 +116,7 @@ function Is-In-Blacklist {
 }
 
 function Set-Recursion {
-    $title = "BatchExport - Aseprite Scripts Collection"
+    $title = "BatchExport - AsecriptHub"
     $message = "Do you want to export recursively ?"
     $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "The script will export files in every sub-folder."
     $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "The script will only export files of this folder."

@@ -129,17 +129,17 @@ function Write-Settings {
 }
 
 function Confirm-Settings {
-    $title = "BatchExport - Aseprite Scripts Collection"
-    $message = "Confirm the settings and launch the export ?"
-    $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Launch the export."
+    $title = "BatchExport - AsecriptHub"
+    $message = "Confirm the settings and launch the commands batch ?"
+    $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Launch the commands batch."
     $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "Exit the script."
     $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
     $result = $host.ui.PromptForChoice($title, $message, $options, 0)
     switch ($result) {
         0 {
-            prt "Launching the batch CLI..." Magenta
+            prt "Launching the commands AsecriptHub..." Magenta
         } 1 {
-            prt "Batch CLI Cancelled" Red
+            prt "Commands batch Cancelled" Red
             Exit
         }
     }
