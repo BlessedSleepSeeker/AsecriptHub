@@ -1,29 +1,29 @@
 <#
 Created by Camille Gouneau
-13 July 2023
+19 July 2023
 
 .Synopsis
-Flexible Powershell Script for mass exporting of .ase and .aseprite files.
+Flexible Powershell Script for applying CLI Aseprite command on a batch of .ase and .aseprite files.
 
 .Description
-This script allows you to export an entire folder and every sub-folder of .ase and .aseprite files.
+This script allows you to call Aseprite.exe <your command> on an entire folder and every sub-folder of .ase and .aseprite files.
 The only mandatory parameter is AsepritePath.
 The others parameters will be prompted in CLI.
 
 The script have been created to be used with AsecriptHub ! <https://github.com/Camille-Gouneau/AsecriptHub>
 
 .Example
-BatchExport.ps1 -AsepritePath "C:\Program Files (x86)\Steam\steamapps\common\Aseprite\Aseprite.exe"
+BatchCLI.ps1 -AsepritePath "C:\Program Files (x86)\Steam\steamapps\common\Aseprite\Aseprite.exe"
 
 #>
+
 
 Param(
     [string]$AsepritePath,
     [string]$SpritesPath,
     [bool]$Recursion,
     [string[]]$Blacklist,
-    [string]$ExportPath,
-    [uint16]$Size
+    [string]$Command
 )
 
 function prt {
@@ -55,25 +55,12 @@ function Set-Sprites-Path {
     prt "Sprite Folder Path set : '${script:SpritesPath}' !" Black White
 }
 
-function Set-Export-Path {
-    $CurrentFolder = Get-Location
-    $script:ExportPath = Read-Host "Please enter the Path to your Exported Files Folder.`nUsing Blank or '.' will export the files next to the .ase/.aseprite files. Current Folder : '${CurrentFolder}'`n"
-    if ([string]::IsNullOrWhiteSpace($script:ExportPath)) {
-        $script:ExportPath = "."
-    }
-    if (-not(Test-Path -Path $script:ExportPath)) {
-        prt "Folder not found at '${ExportPath}'. Exiting." Red Black
-        Exit
-    }
-    prt "Export Path set : '${script:ExportPath}' !" Black White
-}
-
-function Set-Size {
+function Set-Command {
     do {
-        $exportSize = Read-Host "Please enter the Export Size (must be a number above 25 and under 1000) "
-    } while ([string]::IsNullOrWhiteSpace($exportSize) -or !([int]$exportSize -ge 25 -and [int]$exportSize -le 1000))
-    $script:Size = [int]$exportSize
-    prt "Size set : '${script:Size}' !" Black White
+        $command = Read-Host "Please enter your commands. They will be applied like so : 'Aseprite.exe -b <filepath> <your commands>' "
+    } while ([string]::IsNullOrWhiteSpace($command))
+    $script:Command = $command
+    prt "Command set : '${script:Command}' !" Black White
 }
 
 function Write-Blacklist {
@@ -135,11 +122,9 @@ function Set-Recursion {
 function Write-Settings {
     prt "Settings`n--------------------------------------------------------------`n"
     prt "Source folder : ${script:SpritesPath}"
-    #if (${Recursion}) {prt "Recursion : ON"} else {prt "Recursion : OFF"}
     prt "Recursion is : ${script:Recursion}"
     Write-Blacklist
-    prt "Export folder : ${script:ExportPath}"
-    prt "Size : ${script:Size}"
+    prt "Command : ${script:Command}"
     prt "`n--------------------------------------------------------------`n"
 }
 
@@ -152,20 +137,11 @@ function Confirm-Settings {
     $result = $host.ui.PromptForChoice($title, $message, $options, 0)
     switch ($result) {
         0 {
-            prt "Launching the export..." Magenta
+            prt "Launching the batch CLI..." Magenta
         } 1 {
-            prt "Export Cancelled" Red
+            prt "Batch CLI Cancelled" Red
             Exit
         }
-    }
-}
-
-function Write-Names {
-    Param(
-        [string[]]$files
-    )
-    foreach ($file in $files) {
-        prt $file
     }
 }
 
@@ -181,21 +157,7 @@ function Confirm-File-Ase {
     return $false
 }
 
-function Build-Export-Path {
-    Param(
-        [string]$currentPath,
-        [string]$filename
-    )
-    $filenameNoExt = $filename.Split(".")[0]
-    $exportName = "${filenameNoExt}_${script:Size}.png"
-    if ($script:ExportPath -eq ".") {
-
-        return "${currentPath}\${exportName}"
-    }
-    return = "${script:ExportPath}\${exportName}"
-}
-
-function Export-File {
+function Use-Command-File {
     Param(
         [string]$path,
         [string]$filename
@@ -205,20 +167,18 @@ function Export-File {
     }
     
     if (Confirm-File-Ase filename) {
-        prt "Exporting [${filename}]..."
-        $fullpathSprite = "${path}\${filename}"
-        $fullPathExport = Build-Export-Path $path $filename        
-        $exportSize = $script:Size / 100
-        & $script:AsepritePath -b $fullpathSprite --scale $exportSize --save-as $fullPathExport
-        prt "Exported [${filename}] at [${fullPathExport}]" Green
+        prt "Executing command [${script:Command}] on [${filename}]..."
+        $fullpathSprite = "${path}\${filename}"     
         
-        # Sleep is only useful if you use the -p options for faking the run to not desync the message from Aseprite and BatchExport.
+        & $script:AsepritePath -b $fullpathSprite $script:command
+        
+        #Sleep is only useful if you use the -p options for faking the run to not desync the message from Aseprite and BatchExport.
         # Aseprite actually exporting does not print anything to the console.
         #Start-Sleep -Milliseconds 100
     }
 }
 
-function Export-Folder {
+function Use-Command-Folder {
     Param(
         $path
     )
@@ -229,12 +189,12 @@ function Export-Folder {
     $filesInPath = Get-ChildItem -Path $path | Where-Object {!$_.PSIsContainer} | ForEach-Object {$_.Name}
     $foldersInPath = Get-ChildItem -Path $path | Where-Object {$_.PSIsContainer} | ForEach-Object {$_.Name}
     foreach ($file in $filesInPath) {
-        Export-File ${path} ${file}
+        Use-Command-File ${path} ${file}
     }
     if ($script:Recursion) {
         foreach ($folderName in $foldersInPath) {
             if (!(Is-In-Blacklist $folderName)) {
-                Export-Folder "${path}\${folderName}"
+                Use-Command-Folder "${path}\${folderName}"
             }
         }
     }
@@ -247,13 +207,13 @@ function Main {
     Set-Sprites-Path
     Set-Recursion
     Set-Blacklist
-    prt "Please set the parameters for the exported files" Blue
-    Set-Export-Path
-    Set-Size
+    Set-Command
     Write-Settings $SpritesPath
-    Validate-Settings
+    Confirm-Settings
 
-    Export-Folder $script:SpritesPath
+    Use-Command-Folder $script:SpritesPath
+    #victory bell (for a future update maybe ?)
+    #[console]::beep(2000,300)
 }
 
 Main
