@@ -57,7 +57,7 @@ function Set-Sprites-Path {
 
 function Set-Command {
     do {
-        $command = Read-Host "Please enter your commands. They will be applied like so : 'Aseprite.exe -b <filepath> <your commands>' "
+        $command = Read-Host "Please enter your commands. They will be applied like so : 'Aseprite.exe -b <filepath> <your commands>'`n"
     } while ([string]::IsNullOrWhiteSpace($command))
     $script:Command = $command
     prt "Command set : '${script:Command}' !" Black White
@@ -137,7 +137,7 @@ function Confirm-Settings {
     $result = $host.ui.PromptForChoice($title, $message, $options, 0)
     switch ($result) {
         0 {
-            prt "Launching the commands AsecriptHub..." Magenta
+            prt "Launching the commands batch..." Magenta
         } 1 {
             prt "Commands batch Cancelled" Red
             Exit
@@ -166,8 +166,8 @@ function Use-Command-File {
         return
     }
     
+    prt "Executing command [${script:Command}] on [${filename}]..."
     if (Confirm-File-Ase filename) {
-        prt "Executing command [${script:Command}] on [${filename}]..."
         $fullpathSprite = "${path}\${filename}"     
         
         & $script:AsepritePath -b $fullpathSprite $script:command

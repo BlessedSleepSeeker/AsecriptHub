@@ -27,3 +27,4 @@ Every LUA and PowerShell script present in the script folder will be runnable fr
 There are a few (one) scripts already available to use with AsepriteHub
 
 1. [BatchExport](./Scripts%20README/BatchExportREADME.md)
+2. [BatchCommand](./Scripts%20README/BatchCommandREADME.md)
