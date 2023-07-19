@@ -14,7 +14,7 @@ A PowerShell script to use Aseprite CLI on a batch of Aseprite files.
 
 ## Installation
 
-The script have been developed to work in tandem with the [asecript_hub](../README.md) script.  
+The script have been developed to work in tandem with the [AsecriptHub](../README.md) script.  
 You can still use it alone by passing the -AsepritePath parameter to it.
 
 ## Description
@@ -43,7 +43,7 @@ Theses parameters will be automatically prompted in CLI in this order.
 
 ### Input Validation
 
-Did you made a mistake ? After filling in all the parameters, you must answer yes to a prompt to validate and start the generation.
+Did you made a mistake ? After filling in all the parameters, you must answer yes to a prompt to validate and start the batch.
 
 ![RecapValidation](../images/batchcommand_recap.png)
 
@@ -51,6 +51,6 @@ Did you made a mistake ? After filling in all the parameters, you must answer ye
 
 Now, sit back and relax. All of your files are being processed...
 
-You can see which files are being processed and follow along if you want.
+You can see which files are being processed or blacklisted and follow along if you want.
 
 ![CommandResult](../images/batchcommand_result.png)

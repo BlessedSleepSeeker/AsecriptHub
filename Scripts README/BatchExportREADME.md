@@ -14,7 +14,7 @@ A PowerShell script to export a batch of Aseprite file.
 
 ## Installation
 
-The script have been developed to work in tandem with the [asecript_hub](../README.md) script.  
+The script have been developed to work in tandem with the [AsecriptHub](../README.md) script.  
 You can still use it alone by passing the -AsepritePath parameter to it.
 
 ## Description
@@ -46,7 +46,7 @@ Theses parameters will be automatically prompted in CLI in this order.
 
 ### Input Validation
 
-Did you made a mistake ? After filling in all the parameters, you must answer yes to a prompt to validate and start the generation.
+Did you made a mistake ? After filling in all the parameters, you must answer yes to a prompt to validate and start the exports.
 
 ![RecapValidation](../images/batchexport_recap.png)
 
@@ -56,5 +56,7 @@ Now, sit back and relax. All of your files will be named `<filenameWithoutExtens
 
 ![Exporting](../images/batchexport_result.png)
 ![Blacklisted](../images/batchexport_blacklisted.png)
+
+You can see which files are being exported or blacklisted.  
 
 That's it, your files are exported !
