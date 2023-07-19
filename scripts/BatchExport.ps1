@@ -42,7 +42,7 @@ function prt {
     Write-Host $Message @params
 }
 
-function Set-Sprites-Path {
+function Set-SpritesPath {
     $CurrentFolder = Get-Location
     $script:SpritesPath = Read-Host "Path to your Sprite Folder.`nBlank for current folder. Current Folder : '${CurrentFolder}'`n"
     if ([string]::IsNullOrWhiteSpace($script:SpritesPath)) {
@@ -55,7 +55,7 @@ function Set-Sprites-Path {
     prt "Sprite Folder Path set : '${script:SpritesPath}' !" Black White
 }
 
-function Set-Export-Path {
+function Set-ExportPath {
     $CurrentFolder = Get-Location
     $script:ExportPath = Read-Host "Please enter the Path to your Exported Files Folder.`nUsing Blank or '.' will export the files next to the .ase/.aseprite files. Current Folder : '${CurrentFolder}'`n"
     if ([string]::IsNullOrWhiteSpace($script:ExportPath)) {
@@ -100,7 +100,7 @@ function Set-Blacklist {
     
 }
 
-function Is-In-Blacklist {
+function Deny-Blacklisted {
     Param(
         [string]$path
     )
@@ -169,7 +169,7 @@ function Write-Names {
     }
 }
 
-function Confirm-File-Ase {
+function Confirm-FileAse {
     Param(
         [string]$filePath
     )
@@ -181,7 +181,7 @@ function Confirm-File-Ase {
     return $false
 }
 
-function Build-Export-Path {
+function New-ExportPath {
     Param(
         [string]$currentPath,
         [string]$filename
@@ -200,14 +200,14 @@ function Export-File {
         [string]$path,
         [string]$filename
     )
-    if (Is-In-Blacklist $filename) {
+    if (Deny-Blacklisted $filename) {
         return
     }
     
-    if (Confirm-File-Ase filename) {
+    if (Confirm-FileAse filename) {
         prt "Exporting [${filename}]..."
         $fullpathSprite = "${path}\${filename}"
-        $fullPathExport = Build-Export-Path $path $filename        
+        $fullPathExport = New-ExportPath $path $filename        
         $exportSize = $script:Size / 100
         & $script:AsepritePath -b $fullpathSprite --scale $exportSize --save-as $fullPathExport
         prt "Exported [${filename}] at [${fullPathExport}]" Green
@@ -223,7 +223,7 @@ function Export-Folder {
         $path
     )
     prt "Entering folder [${path}]" Blue
-    if (Is-In-Blacklist $path) {
+    if (Deny-Blacklisted $path) {
         return
     }
     $filesInPath = Get-ChildItem -Path $path | Where-Object {!$_.PSIsContainer} | ForEach-Object {$_.Name}
@@ -233,7 +233,7 @@ function Export-Folder {
     }
     if ($script:Recursion) {
         foreach ($folderName in $foldersInPath) {
-            if (!(Is-In-Blacklist $folderName)) {
+            if (!(Deny-Blacklisted $folderName)) {
                 Export-Folder "${path}\${folderName}"
             }
         }
@@ -244,14 +244,14 @@ function Export-Folder {
 
 function Main {
     prt "Please set the parameters for the source files" Blue
-    Set-Sprites-Path
+    Set-SpritesPath
     Set-Recursion
     Set-Blacklist
     prt "Please set the parameters for the exported files" Blue
-    Set-Export-Path
+    Set-ExportPath
     Set-Size
     Write-Settings $SpritesPath
-    Validate-Settings
+    Confirm-Settings
 
     Export-Folder $script:SpritesPath
 }

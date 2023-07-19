@@ -42,7 +42,7 @@ function prt {
     Write-Host $Message @params
 }
 
-function Set-Sprites-Path {
+function Set-SpritesPath {
     $CurrentFolder = Get-Location
     $script:SpritesPath = Read-Host "Path to your Sprite Folder.`nBlank for current folder. Current Folder : '${CurrentFolder}'`n"
     if ([string]::IsNullOrWhiteSpace($script:SpritesPath)) {
@@ -87,7 +87,7 @@ function Set-Blacklist {
     
 }
 
-function Is-In-Blacklist {
+function Deny-Blacklisted {
     Param(
         [string]$path
     )
@@ -145,7 +145,7 @@ function Confirm-Settings {
     }
 }
 
-function Confirm-File-Ase {
+function Confirm-FileAse {
     Param(
         [string]$filePath
     )
@@ -162,12 +162,12 @@ function Use-Command-File {
         [string]$path,
         [string]$filename
     )
-    if (Is-In-Blacklist $filename) {
+    if (Deny-Blacklisted $filename) {
         return
     }
     
-    prt "Executing command [${script:Command}] on [${filename}]..."
-    if (Confirm-File-Ase filename) {
+    if (Confirm-FileAse filename) {
+        prt "Executing command [${script:Command}] on [${filename}]..."
         $fullpathSprite = "${path}\${filename}"     
         
         & $script:AsepritePath -b $fullpathSprite $script:command
@@ -183,7 +183,7 @@ function Use-Command-Folder {
         $path
     )
     prt "Entering folder [${path}]" Blue
-    if (Is-In-Blacklist $path) {
+    if (Deny-Blacklisted $path) {
         return
     }
     $filesInPath = Get-ChildItem -Path $path | Where-Object {!$_.PSIsContainer} | ForEach-Object {$_.Name}
@@ -193,7 +193,7 @@ function Use-Command-Folder {
     }
     if ($script:Recursion) {
         foreach ($folderName in $foldersInPath) {
-            if (!(Is-In-Blacklist $folderName)) {
+            if (!(Deny-Blacklisted $folderName)) {
                 Use-Command-Folder "${path}\${folderName}"
             }
         }
@@ -204,7 +204,7 @@ function Use-Command-Folder {
 
 function Main {
     prt "Please set the parameters for the source files" Blue
-    Set-Sprites-Path
+    Set-SpritesPath
     Set-Recursion
     Set-Blacklist
     Set-Command
