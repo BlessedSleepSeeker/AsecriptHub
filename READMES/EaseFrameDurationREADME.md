@@ -1,10 +1,10 @@
-# BatchExport
+# Ease Frame Duration
 
-A LUA script to export a batch of Aseprite file.
+A LUA script to change the duration of frames based on easing functions.
 
 [Return to the Integrated Script List](../README.md#integrated-scripts)
 
-- [BatchExport](#batchexport)
+- [Ease Frame Duration](#ease-frame-duration)
 	- [Installation](#installation)
 	- [Description](#description)
 	- [Using the script](#using-the-script)
