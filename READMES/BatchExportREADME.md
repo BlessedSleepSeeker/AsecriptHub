@@ -42,20 +42,20 @@ Theses parameters will be automatically prompted in CLI in this order.
 - `Size` : the export size, in percent.
   - `Size` must be between `25` & `1000`
 
-![Parameters](../images/batchexport_param.png)
+![Parameters](images/batchexport_param.png)
 
 ### Input Validation
 
 Did you made a mistake ? After filling in all the parameters, you must answer yes to a prompt to validate and start the exports.
 
-![RecapValidation](../images/batchexport_recap.png)
+![RecapValidation](images/batchexport_recap.png)
 
 ### Exporting
 
 Now, sit back and relax. All of your files will be named `<filenameWithoutExtension>_<Size>.png`
 
-![Exporting](../images/batchexport_result.png)
-![Blacklisted](../images/batchexport_blacklisted.png)
+![Exporting](images/batchexport_result.png)
+![Blacklisted](images/batchexport_blacklisted.png)
 
 You can see which files are being exported or blacklisted.  
 

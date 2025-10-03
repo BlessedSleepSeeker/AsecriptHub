@@ -39,13 +39,13 @@ Theses parameters will be automatically prompted in CLI in this order.
   - Example : `apple.aseprite;hero;swordSwing.ase`. This will blacklist the `apple.aseprite` and `swordSwing.ase` files, and the entire `hero` folder.
 - `Command` : The applied command line to each files. The command line will be applied as such : `Aseprite.exe <file path> <commands>`
 
-![Parameters](../images/batchcommand_param.png)
+![Parameters](images/batchcommand_param.png)
 
 ### Input Validation
 
 Did you made a mistake ? After filling in all the parameters, you must answer yes to a prompt to validate and start the batch.
 
-![RecapValidation](../images/batchcommand_recap.png)
+![RecapValidation](images/batchcommand_recap.png)
 
 ### Execution
 
@@ -53,4 +53,4 @@ Now, sit back and relax. All of your files are being processed...
 
 You can see which files are being processed or blacklisted and follow along if you want.
 
-![CommandResult](../images/batchcommand_result.png)
+![CommandResult](images/batchcommand_result.png)
