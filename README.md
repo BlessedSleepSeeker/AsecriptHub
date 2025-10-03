@@ -29,7 +29,7 @@ There are a few scripts already available to use with AsepriteHub :
 
 1. [BatchExport](./READMES/BatchExportREADME.md)
 2. [BatchCommand](./READMES/BatchCommandREADME.md)
-3. [EaseFrameDuration](./READMES/EaseFrameTimeREADME.md)
+3. [EaseFrameDuration](./READMES/EaseFrameDurationREADME.md)
 
 ## Adding AsecriptHub as an alias
 
