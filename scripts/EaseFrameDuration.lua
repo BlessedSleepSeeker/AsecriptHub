@@ -33,6 +33,7 @@ local first_frame = 1
 local last_frame = 0
 local ms_budget = 1000
 local ease_function = ""
+local minimum_ms_duration = 2
 
 local function normalizer(val, max, min)
   return (val - min) / (max - min);
@@ -43,7 +44,7 @@ local function easeInSine(x)
 end
 
 local function easeOutSine(x)
-	return 1 - math.sin((x * math.pi) / 2)
+	return math.sin((x * math.pi) / 2)
 end
 
 local function easeInOutSine(x)
@@ -108,7 +109,7 @@ end
 
 local function easeInOutQuint(x)
 	local answer = 16 * x * x * x * x * x
-	if x < 0.5 then
+	if x >= 0.5 then
 		answer = 1 - ((-2 * x + 2)^5) / 2
 	end
 	return answer
@@ -271,9 +272,14 @@ local function calculate_frames_duration()
 	app.transaction("Frame Duration Easing",
 		function ()
 			for i, frame_duration in ipairs(reversed_frames_durations) do
-    			print(i, ":", math.ceil(frame_duration * 1000))
+				local ms_duration = frame_duration * 1000
+				if ms_duration < tonumber(minimum_ms_duration) then
+					ms_duration = tonumber(minimum_ms_duration)
+				end
+    			print(i, ":", math.ceil(ms_duration))
 				local frame = spr.frames[i]
-				frame.duration = math.ceil(frame_duration * 1000) / 1000
+				-- duration is in seconds
+				frame.duration = math.ceil(ms_duration) / 1000
 			end
 		end)
 end
@@ -287,6 +293,7 @@ local function finalOK()
 	last_frame = dlg1.data.last_frame
 	ms_budget = dlg1.data.ms_budget
 	ease_function = dlg1.data.ease_function
+	minimum_ms_duration = dlg1.data.minimum_ms_duration
 
 	calculate_frames_duration()
 end
@@ -336,6 +343,7 @@ do
               label="Easing Function",
               option=EASE_IN_SINE,
               options={ EASE_IN_SINE, EASE_OUT_SINE, EASE_IN_OUT_SINE, EASE_IN_QUAD, EASE_OUT_QUAD, EASE_IN_OUT_QUAD, EASE_IN_CUBIC, EASE_OUT_CUBIC, EASE_IN_OUT_CUBIC, EASE_IN_QUART, EASE_OUT_QUART, EASE_IN_OUT_QUART, EASE_IN_QUINT, EASE_OUT_QUINT, EASE_IN_OUT_QUINT, EASE_IN_EXPO, EASE_OUT_EXPO, EASE_IN_OUT_EXPO, EASE_IN_CIRC, EASE_OUT_CIRC, EASE_IN_OUT_CIRC, EASE_LINEAR }}
+		:entry{ label="Minimum MS Duration", id="minimum_ms_duration", text="20"}
 
 	for i = 1,#dlgs do
   		addFooter(dlgs[i], (i == 1), (i == #dlgs))
