@@ -12,7 +12,7 @@ A LUA script to export a batch of Aseprite file.
 
 ## Installation
 
-Add this script to your Aseprite script folder.
+Add this [script](../scripts/EaseFrameDuration.lua) to your Aseprite script folder.
 
 ## Description
 
