@@ -10,7 +10,7 @@ A CLI Script Launcher for Aseprite Scripts.
 
 ## Installation
 
-1. Download the [release](https://github.com/Camille-Gouneau/AsecriptHub/releases) and unzip it.
+1. Download the [release](https://github.com/BlessedSleepSeeker/AsecriptHub/releases) and unzip it.
    1. (Optional) : Add `AsepriteHub.ps1` as an [alias](#adding-asecripthub-as-an-alias) in your PowerShell profile.
 2. Change the params.
    1. On the first line, put your path to Aseprite.exe
@@ -27,8 +27,9 @@ Every LUA and PowerShell script present in the script folder will be runnable fr
 
 There are a few scripts already available to use with AsepriteHub :
 
-1. [BatchExport](./Scripts%20README/BatchExportREADME.md)
-2. [BatchCommand](./Scripts%20README/BatchCommandREADME.md)
+1. [BatchExport](./READMES/BatchExportREADME.md)
+2. [BatchCommand](./READMES/BatchCommandREADME.md)
+3. [EaseFrameDuration](./READMES/EaseFrameTimeREADME.md)
 
 ## Adding AsecriptHub as an alias
 
