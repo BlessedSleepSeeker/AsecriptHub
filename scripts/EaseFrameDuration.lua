@@ -282,8 +282,8 @@ local function calculate_frames_duration()
 				if ms_duration < tonumber(minimum_ms_duration) then
 					ms_duration = tonumber(minimum_ms_duration)
 				end
-    			print(i, ":", math.ceil(ms_duration))
-				local frame = spr.frames[i]
+    			print(i + (first_frame - 1), ":", math.ceil(ms_duration))
+				local frame = spr.frames[i + (first_frame - 1)]
 				-- duration is in seconds
 				frame.duration = math.ceil(ms_duration) / 1000
 				sum = sum + math.ceil(ms_duration)
