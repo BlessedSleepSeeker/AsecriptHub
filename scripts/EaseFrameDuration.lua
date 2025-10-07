@@ -39,6 +39,10 @@ local function normalizer(val, max, min)
   return (val - min) / (max - min);
 end
 
+local function denormalizer(val, max, min)
+  return (val) * (max - min) + min;
+end
+
 local function easeInSine(x)
 	return 1 - math.cos((x * math.pi) / 2)
 end
@@ -269,10 +273,12 @@ local function calculate_frames_duration()
 
 	local reversed_frames_durations = reverse(frames_durations)
 
+	local sum = 0
+
 	app.transaction("Frame Duration Easing",
 		function ()
 			for i, frame_duration in ipairs(reversed_frames_durations) do
-				local ms_duration = frame_duration * 1000
+				local ms_duration = frame_duration * ms_budget
 				if ms_duration < tonumber(minimum_ms_duration) then
 					ms_duration = tonumber(minimum_ms_duration)
 				end
@@ -280,8 +286,10 @@ local function calculate_frames_duration()
 				local frame = spr.frames[i]
 				-- duration is in seconds
 				frame.duration = math.ceil(ms_duration) / 1000
+				sum = sum + math.ceil(ms_duration)
 			end
 		end)
+	print("sum of durations : ", sum)
 end
 
 local function cancelWizard(dlg)
